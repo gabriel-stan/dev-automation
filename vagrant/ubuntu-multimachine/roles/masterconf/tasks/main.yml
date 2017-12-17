@@ -1,0 +1,9 @@
+---
+# tasks file for masterconf
+- name: copy config
+  copy:
+    src: master.conf
+    dest: /home/ubuntu/conf
+    owner: ubuntu
+    group: ubuntu
+    mode: 0644

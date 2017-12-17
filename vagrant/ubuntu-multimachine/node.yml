@@ -1,0 +1,10 @@
+---
+- hosts: default
+
+  tasks:
+    - name: Safe system upgrade via aptitude
+      apt:
+        upgrade: safe
+
+  roles:
+    - role: docker
