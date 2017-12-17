@@ -1,6 +1,6 @@
 ---
-- hosts: default
-
+- hosts: all
+  become: yes
   tasks:
     - name: Safe system upgrade via aptitude
       apt:

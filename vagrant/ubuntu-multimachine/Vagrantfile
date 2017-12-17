@@ -12,18 +12,26 @@ Vagrant.configure("2") do |config|
 
 	# master VM
 	config.vm.define "master", primary: true do |master|
-	master.vm.box = BOX
-	master.vm.hostname = "master"
-	master.vm.network "private_network", ip: "192.168.33.10"
-	master.vm.network :forwarded_port, guest: 22, host: 2022, id: "ssh"
+		master.vm.box = BOX
+		master.vm.hostname = "master"
+		master.vm.network "private_network", ip: "192.168.33.10"
+		master.vm.network :forwarded_port, guest: 22, host: 10022, id: "ssh"
 
-	# Virtualbox VM provider  
-	master.vm.provider "virtualbox" do |vb|
-		# Customize the amount of memory on the VM:
-		vb.memory = 512
-		vb.cpus = 1
-		vb.name = "master"
-	end
+		# Virtualbox VM provider  
+		master.vm.provider "virtualbox" do |vb|
+			# Customize the amount of memory on the VM:
+			vb.memory = 512
+			vb.cpus = 1
+			vb.name = "master"
+		end
+		
+		config.vm.provision "ansible_local" do |ansible|
+			# Avoid installing on tests
+			ansible.install = "false"
+			# ansible.install = "true"
+			ansible.version = "latest"
+			ansible.playbook = "master.yml"
+		end
 
 	end
       
@@ -33,7 +41,7 @@ Vagrant.configure("2") do |config|
 			node.vm.box = "ubuntu/xenial64"
 			node.vm.hostname = "node#{i}"
 			node.vm.network "private_network", ip: "192.168.33.1#{i}"
-			node.vm.network :forwarded_port, guest: 22, host: "2#{i}22", id: "ssh"
+			node.vm.network :forwarded_port, guest: 22, host: "10#{i}22", id: "ssh"
 
 			# Virtualbox VM provider  
 			node.vm.provider "virtualbox" do |vb|
@@ -41,6 +49,14 @@ Vagrant.configure("2") do |config|
 				vb.memory = 512
 				vb.cpus = 1
 				vb.name = "node#{i}"
+			end
+					
+			node.vm.provision "ansible_local" do |ansible|
+				# Avoid installing on tests
+				ansible.install = "false"
+				# ansible.install = "true"
+				ansible.version = "latest"
+				ansible.playbook = "node.yml"
 			end
 		end
 	end
